@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Ramadass | The Vibe Coder</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <!-- GSAP & Lenis -->
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #050505;
+      /* Swapped neon amber for a natural, subtle, glassy tone */
+      --accent: #e5e5e5;
+      --accent-glow: rgba(255, 255, 255, 0.1);
+      
+      /* Highly transparent glassmorphism */
+      --glass-bg: rgba(255, 255, 255, 0.02);
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-blur: blur(30px);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background-color: var(--bg);
+      color: #e5e5e5;
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    body.locked { overflow: hidden; }
+
+    .font-mono { font-family: 'Space Mono', monospace; }
+
+    /* --- SPLASH SCREEN --- */
+    #splash {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .splash-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 1.5s ease-in-out;
+      filter: grayscale(80%) contrast(1.2);
+    }
+    .splash-bg.active {
+      opacity: 0.3;
+    }
+
+    .splash-text {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(40px, 8vw, 100px);
+      line-height: 1.1;
+      font-weight: 800;
+      color: #fff;
+      opacity: 0;
+      transform: translateY(30px);
+      text-transform: uppercase;
+      letter-spacing: -2px;
+    }
+    
+    .splash-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      color: #a3a3a3;
+      margin-top: 30px;
+      max-width: 600px;
+      opacity: 0;
+      transform: translateY(20px);
+      padding: 0 20px;
+      background: rgba(0,0,0,0.5);
+      padding: 10px 20px;
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+    }
+    
+    .splash-hint {
+      margin-top: 60px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0;
+      color: rgba(255,255,255,0.4);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
+
+    /* MAIN SITE WRAPPER */
+    #main-content {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    /* --- BACKGROUND IMAGES & VIDEO --- */
+    .bg-section {
+      position: relative;
+      background-attachment: fixed;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .bg-hero {
+      background-image: linear-gradient(to bottom, rgba(5,5,5,0.7), rgba(5,5,5,1)), url('bg_hero.jpg');
+    }
+    .bg-story {
+      background-image: linear-gradient(to bottom, rgba(5,5,5,1), rgba(5,5,5,0.75), rgba(5,5,5,1)), url('bg_abstract.jpg');
+    }
+    .bg-code {
+      background-image: linear-gradient(to bottom, rgba(5,5,5,1), rgba(5,5,5,0.85), rgba(5,5,5,1)), url('bg_code.jpg');
+    }
+
+    /* Video Background for Hero */
+    .video-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.15;
+      z-index: 0;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    /* --- GLASSMORPHISM --- */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .glass:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* --- VINTAGE GLITCH EFFECTS --- */
+    .glitch-wrapper { position: relative; }
+    .glitch-text {
+      position: relative;
+      color: #fff;
+      font-weight: 800;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .glitch-text::before,
+    .glitch-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: transparent;
+    }
+    .glitch-text::before {
+      left: 2px;
+      text-shadow: -2px 0 rgba(255,255,255,0.3);
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim 5s infinite linear alternate-reverse;
+    }
+    .glitch-text::after {
+      left: -2px;
+      text-shadow: -2px 0 rgba(100,100,100,0.5);
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim2 5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-anim {
+      0% { clip: rect(10px, 9999px, 83px, 0); }
+      5% { clip: rect(61px, 9999px, 30px, 0); }
+      10% { clip: rect(98px, 9999px, 87px, 0); }
+      15% { clip: rect(41px, 9999px, 12px, 0); }
+      20% { clip: rect(78px, 9999px, 20px, 0); }
+      25% { clip: rect(13px, 9999px, 46px, 0); }
+      30% { clip: rect(89px, 9999px, 93px, 0); }
+      35% { clip: rect(52px, 9999px, 49px, 0); }
+      40% { clip: rect(31px, 9999px, 7px, 0); }
+      45% { clip: rect(66px, 9999px, 99px, 0); }
+      50% { clip: rect(2px, 9999px, 53px, 0); }
+      55% { clip: rect(77px, 9999px, 36px, 0); }
+      60% { clip: rect(45px, 9999px, 14px, 0); }
+      65% { clip: rect(94px, 9999px, 68px, 0); }
+      70% { clip: rect(25px, 9999px, 81px, 0); }
+      75% { clip: rect(59px, 9999px, 22px, 0); }
+      80% { clip: rect(83px, 9999px, 71px, 0); }
+      85% { clip: rect(18px, 9999px, 39px, 0); }
+      90% { clip: rect(91px, 9999px, 64px, 0); }
+      95% { clip: rect(37px, 9999px, 95px, 0); }
+      100% { clip: rect(62px, 9999px, 42px, 0); }
+    }
+    @keyframes glitch-anim2 {
+      0% { clip: rect(68px, 9999px, 11px, 0); }
+      5% { clip: rect(21px, 9999px, 89px, 0); }
+      10% { clip: rect(76px, 9999px, 34px, 0); }
+      15% { clip: rect(48px, 9999px, 92px, 0); }
+      20% { clip: rect(15px, 9999px, 57px, 0); }
+      25% { clip: rect(85px, 9999px, 7px, 0); }
+      30% { clip: rect(39px, 9999px, 83px, 0); }
+      35% { clip: rect(96px, 9999px, 26px, 0); }
+      40% { clip: rect(53px, 9999px, 69px, 0); }
+      45% { clip: rect(12px, 9999px, 44px, 0); }
+      50% { clip: rect(74px, 9999px, 91px, 0); }
+      55% { clip: rect(33px, 9999px, 18px, 0); }
+      60% { clip: rect(88px, 9999px, 62px, 0); }
+      65% { clip: rect(41px, 9999px, 79px, 0); }
+      70% { clip: rect(5px, 9999px, 35px, 0); }
+      75% { clip: rect(67px, 9999px, 81px, 0); }
+      80% { clip: rect(29px, 9999px, 54px, 0); }
+      85% { clip: rect(93px, 9999px, 16px, 0); }
+      90% { clip: rect(58px, 9999px, 77px, 0); }
+      95% { clip: rect(19px, 9999px, 48px, 0); }
+      100% { clip: rect(82px, 9999px, 9px, 0); }
+    }
+
+    /* TV Noise Overlay */
+    .tv-noise {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.04;
+      background: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+    }
+
+    /* --- LAYOUT --- */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    
+    nav {
+      position: fixed;
+      top: 0; width: 100%;
+      padding: 20px 0;
+      z-index: 100;
+      background: rgba(5,5,5,0.4);
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255,255,255,0.02);
+    }
+    .nav-links {
+      display: flex; gap: 24px; justify-content: flex-end;
+    }
+    .nav-links a {
+      color: #888;
+      text-decoration: none;
+      font-size: 14px;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    section {
+      padding: 120px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sec-title {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      color: #fff;
+    }
+    .sec-title span {
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      display: block;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* --- MARQUEE --- */
+    .marquee-container {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+      padding: 40px 0;
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.2);
+    }
+    .marquee-container::before, .marquee-container::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; width: 150px; z-index: 2;
+    }
+    .marquee-container::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+    .marquee-container::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+    
+    .marquee-content {
+      display: inline-block;
+      animation: marquee 25s linear infinite;
+    }
+    .marquee-item {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 24px;
+      font-weight: 700;
+      color: #666;
+      margin: 0 40px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .marquee-item:hover {
+      color: var(--accent);
+      text-shadow: 0 0 15px var(--accent-glow);
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* --- GRID LAYOUTS --- */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+    
+    .card { padding: 32px; }
+    .card h3 {
+      font-family: 'Space Mono', monospace;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+    .card p {
+      color: #a3a3a3;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .card .tag {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ddd;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.05);
+      margin-right: 8px;
+      margin-top: 16px;
+    }
+
+    /* --- UTILITIES --- */
+    .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-decoration: none;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 100%; height: 100%;
+      background: var(--accent);
+      transition: all 0.3s;
+      z-index: -1;
+    }
+    .btn:hover::before { left: 0; }
+    .btn:hover { color: #000; box-shadow: 0 0 20px var(--accent-glow); }
+
+    /* --- MODAL FOR PROJECT PREVIEWS --- */
+    #project-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(15px);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      padding: 20px;
+    }
+    .modal-content {
+      width: 100%;
+      max-width: 1100px;
+      height: 85vh;
+      background: var(--bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 60px rgba(0,0,0,1);
+    }
+    .modal-header {
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(10,10,10,0.95);
+    }
+    .modal-title {
+      font-family: 'Space Mono', monospace;
+      color: #fff;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+    .close-modal {
+      cursor: pointer;
+      color: #a3a3a3;
+      font-size: 28px;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+    .close-modal:hover { color: #fff; }
+    .modal-body {
+      flex-grow: 1;
+      width: 100%;
+      background: #000;
+      position: relative;
+    }
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .modal-footer {
+      padding: 15px 20px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(10,10,10,0.95);
+    }
+
+    /* For GSAP starting state */
+    .gs-reveal {
+      opacity: 0;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body class="locked">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash">
+    <!-- Cinematic randomly changing backgrounds -->
+    <div class="splash-bg active" style="background-image: url('bg_hero.jpg');"></div>
+    <div class="splash-bg" style="background-image: url('bg_code.jpg');"></div>
+    <div class="splash-bg" style="background-image: url('bg_abstract.jpg');"></div>
+    
+    <!-- TV Noise specifically layered over splash background to emphasize vintage vibe -->
+    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:-1;"></div>
+
+    <div class="splash-text glitch-text" data-text="HI, I AM RAMU">HI, I AM RAMU</div>
+    <div class="splash-sub">AI & ML Developer | Frontend Intern & UI/UX Designer | Creative Technologist</div>
+    <div class="splash-hint">[ Click anywhere to enter ]</div>
+  </div>
+
+  <div class="tv-noise"></div>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <div id="main-content">
+    <nav>
+      <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="font-mono" style="color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 2px;">RAMU<span style="color:var(--accent)">_</span></div>
+        <div class="nav-links">
+          <a href="#story">Story</a>
+          <a href="#experience">Experience</a>
+          <a href="#projects">Work</a>
+          <a href="#skills">Arsenal</a>
+          <a href="#contact">Terminal</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="bg-section bg-hero" style="min-height: 100vh; display: flex; align-items: center;">
+      <video class="video-bg" autoplay loop muted playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-417-large.mp4" type="video/mp4">
+      </video>
+      
+      <div class="container relative z-10">
+        <div class="gs-reveal">
+          <p class="font-mono" style="color: var(--accent); margin-bottom: 20px; letter-spacing: 2px;">B.Tech CSE (AI/ML) · VISTAS, Chennai</p>
+          <h1 class="glitch-text" data-text="THINK. CODE. LAUNCH." style="font-size: clamp(40px, 8vw, 90px); line-height: 1.1;">
+            THINK.<br>CODE.<br>LAUNCH.
+          </h1>
+          <p style="max-width: 700px; font-size: 20px; color: #a3a3a3; margin: 30px 0; line-height: 1.6;">
+            I am a second-year B.Tech CSE (AI & ML) student who builds real products. I don't just consume technology — I break it down, understand it, and rebuild it my own way. I thrive where raw logic meets creative execution.
+          </p>
+          <div style="display: flex; gap: 20px; margin-top: 40px;">
+            <a href="#projects" class="btn">See My Work</a>
+            <a href="https://github.com/codebyramu" target="_blank" class="btn" style="border-color: #fff; color: #fff;">GitHub_</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE SECTION -->
+    <section id="experience" style="background: #080808;">
+      <div class="container gs-reveal">
+        <h2 class="sec-title"><span>// ACTIVE</span> Experience</h2>
+        <div class="glass card">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <h3>Frontend Developer & UI/UX Designer Intern @ Connect N Build</h3>
+            <span style="font-size: 14px; background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 20px; font-family: 'Space Mono', monospace; border: 1px solid rgba(255,255,255,0.1);">Currently Active</span>
+          </div>
+          <p>Working on real client production environments. Executing design-to-development pipelines, building UI systems, responsive designs, and product structuring for diverse domains.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MY STORY -->
+    <section id="story" class="bg-section bg-story">
+      <div class="container gs-reveal">
+        <div class="glass" style="padding: 60px; max-width: 900px; margin: 0 auto; border-left: 2px solid rgba(255,255,255,0.2);">
+          <h2 class="sec-title" style="margin-bottom: 20px;"><span>// ORIGIN</span> My Story</h2>
+          <h4 style="font-size: 24px; font-family: 'Space Mono', monospace; color: #fff; margin-bottom: 30px;">I'm A Ramadass. I'm not like most people who just use apps and move on.</h4>
+          
+          <p style="font-size: 18px; color: #d4d4d4; line-height: 1.8; margin-bottom: 20px;">
+            Whenever I see an app, website, or tool, one question always hits my mind: <strong style="color: #fff;">"Why not build one myself — and make it open source?"</strong>
+          </p>
+          <p style="font-size: 18px; color: #d4d4d4; line-height: 1.8; margin-bottom: 20px;">
+            That mindset is what drives me. I don't just consume technology. I break it down, understand it, and rebuild it my own way. I focus heavily on frontend experiences, premium UI design, AI, and practical software products.
+          </p>
+          <p style="font-size: 18px; color: #d4d4d4; line-height: 1.8;">
+            I write plain English prompts to drive complex builds via AGY CLI, treating my dev environment like an engineer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECH ARSENAL (MARQUEE) -->
+    <section id="skills" style="padding: 0; background: #000;">
+      <div class="container" style="padding-top: 80px; padding-bottom: 20px;">
+        <h2 class="sec-title" style="margin-bottom: 0;"><span>// ARSENAL</span> Tech Stack</h2>
+      </div>
+      <div class="marquee-container">
+        <div class="marquee-content">
+          <!-- Marquee Elements based on new skills -->
+          <span class="marquee-item">Python</span>
+          <span class="marquee-item">React</span>
+          <span class="marquee-item">Next.js 15</span>
+          <span class="marquee-item">Three.js</span>
+          <span class="marquee-item">GSAP</span>
+          <span class="marquee-item">Flask</span>
+          <span class="marquee-item">Node.js</span>
+          <span class="marquee-item">Supabase</span>
+          <span class="marquee-item">Anthropic API</span>
+          <span class="marquee-item">C++</span>
+          <span class="marquee-item">Ubuntu</span>
+          
+          <span class="marquee-item">Python</span>
+          <span class="marquee-item">React</span>
+          <span class="marquee-item">Next.js 15</span>
+          <span class="marquee-item">Three.js</span>
+          <span class="marquee-item">GSAP</span>
+          <span class="marquee-item">Flask</span>
+          <span class="marquee-item">Node.js</span>
+          <span class="marquee-item">Supabase</span>
+          <span class="marquee-item">Anthropic API</span>
+          <span class="marquee-item">C++</span>
+          <span class="marquee-item">Ubuntu</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- DETAILED SKILLS GRID -->
+    <section style="background: #000; padding-top: 40px;">
+      <div class="container gs-reveal">
+        <div class="grid-3">
+          <div class="glass card">
+            <h3>Languages</h3>
+            <p>Python, C++, C, SQL (known) <br><br><em>In progress: JavaScript (ES6+), TypeScript, HTML5, CSS3</em></p>
+          </div>
+          <div class="glass card">
+            <h3>Frontend & UI</h3>
+            <p>React, Next.js 15, Three.js, GSAP (ScrollTrigger), Framer Motion, Lenis, Canvas 2D API, Responsive UI, Glassmorphism</p>
+          </div>
+          <div class="glass card">
+            <h3>Backend & Tools</h3>
+            <p>Flask, Node.js, Supabase, Google OAuth, Ubuntu Linux, Git, Playwright, AGY CLI</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" class="bg-section bg-code">
+      <div class="container gs-reveal">
+        <h2 class="sec-title"><span>// ARCHIVE</span> Selected Projects</h2>
+        <div class="grid-2">
+          
+          <!-- Notice the new data-url attributes and the open-modal-btn class -->
+          <div class="glass card">
+            <h3>Sasta Trust</h3>
+            <p>Production donation platform for a charitable organization. Live donor leaderboards, receipt management, and Google OAuth login.</p>
+            <div>
+              <span class="tag">Supabase</span> <span class="tag">Vercel</span> <span class="tag">OAuth</span>
+            </div>
+            <a href="#" data-url="https://sasta-trust-app.vercel.app/" data-title="Sasta Trust" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
+          </div>
+
+          <div class="glass card">
+            <h3>Amrut Satvik Foods</h3>
+            <p>Live e-commerce platform for Satvik and organic foods. Deep focus on product display, shopping UX, and conversion-oriented product flow.</p>
+            <div>
+              <span class="tag">E-Commerce</span> <span class="tag">Frontend</span>
+            </div>
+            <a href="#" data-url="https://amrutsatvikfoodsv2.vercel.app/" data-title="Amrut Satvik Foods" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
+          </div>
+
+          <div class="glass card">
+            <h3>Bhaskararajapuram Temple</h3>
+            <p>Immersive heritage storytelling website. Cinematic, scroll-driven website built with Next.js 15, GSAP ScrollTrigger, and Framer Motion.</p>
+            <div>
+              <span class="tag">Next.js 15</span> <span class="tag">GSAP</span>
+            </div>
+            <a href="#" data-url="https://temple-111.vercel.app/" data-title="Bhaskararajapuram Temple" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
+          </div>
+
+          <div class="glass card">
+            <h3>BloxdioCoderAI</h3>
+            <p>Dual-AI RAG pipeline coding assistant for the Bloxd.io game platform. Reduces 60k token burn by utilizing a refined two-key AI pipeline.</p>
+            <div>
+              <span class="tag">AI / RAG</span> <span class="tag">JS</span>
+            </div>
+            <a href="#" data-url="https://codebyramu.github.io/BloxdioCoderAI/" data-title="BloxdioCoderAI" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
+          </div>
+
+          <div class="glass card">
+            <h3>Project V (Ekalavya)</h3>
+            <p>Student skill-tracking and placement portfolio platform for engineering students. <strong>Awarded 3rd Prize at Velsathon 2026.</strong></p>
+            <div>
+              <span class="tag">Platform</span> <span class="tag">Award Winning</span>
+            </div>
+          </div>
+
+          <div class="glass card">
+            <h3>Project A</h3>
+            <p>A peer-led educational mentorship network operating as an expansion of Project V. Managing an 8-member core team to train students.</p>
+            <div>
+              <span class="tag">Mentorship</span> <span class="tag">Leadership</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ACHIEVEMENTS -->
+    <section style="background: #050505;">
+      <div class="container gs-reveal">
+        <h2 class="sec-title"><span>// MILESTONES</span> Hackathons & Achievements</h2>
+        <div class="glass card">
+          <ul style="list-style: none; padding-left: 0; color: #a3a3a3; font-size: 16px; line-height: 1.8;">
+            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> Velsathon 2026:</span> Secured 3rd place campus-wide for autonomous project creation (Project V).</li>
+            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> BAH 2026:</span> Explored satellite imagery gap-filling using ML and Solar Flare Forecasting as part of Team Gorillas.</li>
+            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> Certifications:</span> Google Cloud Skills Boost, CS50P (Harvard Python), CodinGame Escape, C++ Pattern Printing.</li>
+            <li><span style="color: #fff; font-family: 'Space Mono', monospace;">> AI Verification:</span> Completed professional student verification for advanced AI Pro subscriptions.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOBBIES -->
+    <section style="background: #080808;">
+      <div class="container gs-reveal">
+        <h2 class="sec-title"><span>// OFFLINE</span> Beyond Code</h2>
+        <div class="grid-3">
+          <div class="glass card">
+            <h3>Strategic Chess</h3>
+            <p>Active player mapping out tactical opening variations, sharp defensive structures, and mid-game strategies via standard algebraic coordinate notation. (Beginner level, recently started).</p>
+          </div>
+          <div class="glass card">
+            <h3>Linux Power User</h3>
+            <p>Ubuntu is my daily driver. I manage packages, troubleshoot, and write scripts to automate system behavior.</p>
+          </div>
+          <div class="glass card">
+            <h3>Design Philosophy</h3>
+            <p>I advocate for dark minimal layouts, cinematic aesthetics, and premium UI without visual noise. I try to make the website look more simple and minimal.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GITHUB STATS & CONTACT -->
+    <section id="contact" style="background: #020202; border-top: 1px solid var(--glass-border);">
+      <div class="container gs-reveal">
+        <div class="grid-2" style="gap: 60px;">
+          
+          <div>
+            <h2 class="sec-title"><span>// OPEN SOURCE</span> GitHub Activity</h2>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <img class="glass" src="https://github-readme-stats.vercel.app/api?username=codebyramu&show_icons=true&hide_border=true&bg_color=0a0a0a&title_color=ffffff&icon_color=ffffff&text_color=d6d3d1&hide=stars" alt="GitHub Stats" style="width: 100%; border-radius: 12px; padding: 0;">
+              <img class="glass" src="https://streak-stats.demolab.com?user=codebyramu&hide_border=true&background=0a0a0a&ring=ffffff&fire=ffffff&currStreakLabel=ffffff&sideLabels=d6d3d1&dates=d6d3d1&currStreakNum=fafaf9&sideNums=fafaf9" alt="GitHub Streak" style="width: 100%; border-radius: 12px; padding: 0;">
+            </div>
+          </div>
+
+          <div>
+            <h2 class="sec-title"><span>// TERMINAL</span> Initiate Contact</h2>
+            <p style="margin-bottom: 30px; font-size: 18px;">Open to collabs, interesting builds, or anyone who wants to talk AI, games, or code.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+              <a href="https://github.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
+                <span class="font-mono">GitHub</span>
+                <span style="color: var(--accent);">-></span>
+              </a>
+              <a href="https://x.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
+                <span class="font-mono">X / Twitter</span>
+                <span style="color: var(--accent);">-></span>
+              </a>
+              <a href="https://www.youtube.com/@KingRamu_Gamer" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
+                <span class="font-mono">YouTube</span>
+                <span style="color: var(--accent);">-></span>
+              </a>
+              <a href="https://leetcode.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
+                <span class="font-mono">LeetCode</span>
+                <span style="color: var(--accent);">-></span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <footer style="text-align: center; padding: 40px; border-top: 1px solid var(--glass-border); background: #000;">
+      <p class="font-mono" style="color: #666; font-size: 12px;">ramu · codebyramu · 2025 // SYS.END</p>
+    </footer>
+  </div> <!-- End main-content -->
+
+  <!-- PROJECT MODAL -->
+  <div id="project-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title font-mono" id="modal-title">Project Preview</div>
+        <div class="close-modal font-mono" id="close-modal">&times;</div>
+      </div>
+      <div class="modal-body">
+        <iframe id="modal-iframe" src="" title="Project Preview"></iframe>
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; color: #666; font-family: 'Space Mono', monospace;">Loading Preview...</div>
+      </div>
+      <div class="modal-footer">
+        <a href="#" id="modal-visit-btn" target="_blank" class="btn" style="padding: 10px 20px; font-size: 12px;">Launch Website</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. Splash Screen Background Rotator
+    const splashBgs = document.querySelectorAll('.splash-bg');
+    let currentBg = 0;
+    setInterval(() => {
+      splashBgs[currentBg].classList.remove('active');
+      currentBg = (currentBg + 1) % splashBgs.length;
+      splashBgs[currentBg].classList.add('active');
+    }, 4000); // changes every 4 seconds
+
+    // 2. Initial Splash Animation Setup
+    gsap.to(".splash-text", { opacity: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 0.2 });
+    gsap.to(".splash-sub", { opacity: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 0.6 });
+    gsap.to(".splash-hint", { opacity: 1, duration: 1, delay: 1.5 });
+
+    // 3. Click to enter & Fullscreen
+    const splash = document.getElementById('splash');
+    const mainContent = document.getElementById('main-content');
+    
+    splash.addEventListener('click', () => {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) {
+        docEl.requestFullscreen().catch(err => console.log(err));
+      } else if (docEl.webkitRequestFullscreen) {
+        docEl.webkitRequestFullscreen();
+      }
+
+      gsap.to(splash, {
+        y: "-100%",
+        opacity: 0,
+        duration: 1.2,
+        ease: "power4.inOut",
+        onComplete: () => {
+          splash.style.display = 'none';
+          document.body.classList.remove('locked');
+          mainContent.style.visibility = 'visible';
+          gsap.to(mainContent, { opacity: 1, duration: 1 });
+          initScroll();
+        }
+      });
+    });
+
+    // 4. Modal Logic
+    const modal = document.getElementById('project-modal');
+    const iframe = document.getElementById('modal-iframe');
+    const modalTitle = document.getElementById('modal-title');
+    const modalVisitBtn = document.getElementById('modal-visit-btn');
+    const closeModal = document.getElementById('close-modal');
+
+    document.querySelectorAll('.open-modal-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = btn.getAttribute('data-url');
+        const title = btn.getAttribute('data-title');
+        
+        iframe.src = url;
+        modalTitle.innerText = title;
+        modalVisitBtn.href = url;
+        
+        gsap.to(modal, { autoAlpha: 1, duration: 0.4, ease: "power3.out" });
+        document.body.style.overflow = 'hidden'; // lock scroll behind modal
+      });
+    });
+
+    function hideModal() {
+      gsap.to(modal, { 
+        autoAlpha: 0, 
+        duration: 0.3, 
+        onComplete: () => {
+          iframe.src = ""; // stop iframe loading/playing
+          document.body.style.overflow = ''; // unlock scroll
+        } 
+      });
+    }
+
+    closeModal.addEventListener('click', hideModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) hideModal();
+    });
+
+    // 5. Smooth Scroll and ScrollTrigger (Lenis + GSAP)
+    function initScroll() {
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smooth: true,
+      });
+
+      function raf(time) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add((time)=>{
+        lenis.raf(time * 1000);
+      });
+      gsap.ticker.lagSmoothing(0, 0);
+
+      const reveals = document.querySelectorAll('.gs-reveal');
+      
+      reveals.forEach((elem) => {
+        gsap.fromTo(elem, 
+          { autoAlpha: 0, y: 50 }, 
+          {
+            duration: 1, 
+            autoAlpha: 1, 
+            y: 0, 
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: elem,
+              start: "top 85%", 
+              end: "bottom 20%",
+              toggleActions: "play none none reverse"
+            }
+          }
+        );
+      });
+    }
+  </script>
+</body>
+</html>
