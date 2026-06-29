@@ -77,36 +77,42 @@
       font-size: clamp(40px, 8vw, 100px);
       line-height: 1.1;
       font-weight: 800;
-      color: #fff;
+      color: #ffffff;
       opacity: 0;
       transform: translateY(30px);
       text-transform: uppercase;
       letter-spacing: -2px;
+      /* Constant RGB TV glow */
+      text-shadow: 0 0 30px rgba(255,255,255,0.7), -3px 0 0 rgba(255,0,0,0.8), 3px 0 0 rgba(0,255,255,0.8);
     }
     
     .splash-sub {
       font-family: 'Space Mono', monospace;
-      font-size: 14px;
-      color: #a3a3a3;
+      font-size: 16px;
+      font-weight: 600;
+      color: #e2e8f0;
       margin-top: 30px;
       max-width: 600px;
       opacity: 0;
       transform: translateY(20px);
-      padding: 0 20px;
-      background: rgba(0,0,0,0.5);
-      padding: 10px 20px;
-      border: 1px solid var(--glass-border);
+      background: rgba(10,10,10,0.85);
+      padding: 12px 24px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
       backdrop-filter: blur(10px);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
     
     .splash-hint {
       margin-top: 60px;
-      font-size: 12px;
-      letter-spacing: 2px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 3px;
       text-transform: uppercase;
       opacity: 0;
-      color: rgba(255,255,255,0.4);
+      color: #94a3b8;
       animation: pulse 2s infinite;
+      text-shadow: 0 0 10px rgba(255,255,255,0.3);
     }
     @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.8; } }
 
@@ -324,13 +330,15 @@
       font-weight: 700;
       color: #666;
       margin: 0 40px;
-      transition: all 0.3s;
-      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: crosshair;
     }
     .marquee-item:hover {
-      color: var(--accent);
-      text-shadow: 0 0 15px var(--accent-glow);
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+      transform: scale(1.3);
     }
+    
     @keyframes marquee {
       from { transform: translateX(0); }
       to { transform: translateX(-50%); }
@@ -365,7 +373,66 @@
       margin-top: 16px;
     }
 
-    /* --- UTILITIES --- */
+                                /* --- PROJECT CARDS PREMIUM LAYOUT --- */
+    .project-card {
+      position: relative;
+      padding: 32px;
+      min-height: 450px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: #000;
+    }
+    .liquid-canvas {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0;
+    }
+    .card-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+      pointer-events: none; /* Let mouse hit canvas */
+    }
+    .card-content * { pointer-events: auto; } /* Re-enable clicks for text/buttons */
+    
+    .card-title {
+      font-size: 24px;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(0,0,0,0.6);
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 4px;
+      backdrop-filter: blur(10px);
+    }
+    .card-bottom {
+      background: rgba(0,0,0,0.7);
+      padding: 20px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .card-desc {
+      font-size: 15px; line-height: 1.6;
+      color: #cbd5e1;
+    }
+    .project-card .btn {
+      padding: 10px 24px;
+      font-size: 14px;
+      background: rgba(0,0,0,0.8);
+    }
+    .project-card:hover {
+      box-shadow: 0 0 30px rgba(255,255,255,0.1);
+    }
+/* --- UTILITIES --- */
     .btn {
       display: inline-block;
       padding: 14px 28px;
@@ -397,8 +464,8 @@
     #project-modal {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(15px);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
       z-index: 10000;
       display: flex;
       justify-content: center;
@@ -411,22 +478,24 @@
       width: 100%;
       max-width: 1100px;
       height: 85vh;
-      background: var(--bg);
-      border: 1px solid var(--glass-border);
+      background: rgba(10, 10, 10, 0.3);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
-      box-shadow: 0 0 60px rgba(0,0,0,1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     }
     .modal-header {
       padding: 15px 20px;
-      border-bottom: 1px solid var(--glass-border);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(10,10,10,0.95);
+      background: rgba(0,0,0,0.4);
     }
     .modal-title {
       font-family: 'Space Mono', monospace;
@@ -445,7 +514,7 @@
     .modal-body {
       flex-grow: 1;
       width: 100%;
-      background: #000;
+      background: transparent;
       position: relative;
     }
     .modal-body iframe {
@@ -455,20 +524,24 @@
     }
     .modal-footer {
       padding: 15px 20px;
-      border-top: 1px solid var(--glass-border);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       display: flex;
       justify-content: flex-end;
-      background: rgba(10,10,10,0.95);
+      background: rgba(0,0,0,0.4);
     }
 
-    /* For GSAP starting state */
-    .gs-reveal {
-      opacity: 0;
-      visibility: hidden;
-    }
+    /* .gs-reveal opacity removed so fallback works */
   </style>
+
+  
+  
 </head>
 <body class="locked">
+
+  
+  
+
+
 
   <!-- SPLASH SCREEN -->
   <div id="splash">
@@ -528,7 +601,7 @@
     <!-- EXPERIENCE SECTION -->
     <section id="experience" style="background: #080808;">
       <div class="container gs-reveal">
-        <h2 class="sec-title"><span>// ACTIVE</span> Experience</h2>
+        <h2 class="sec-title">Experience</h2>
         <div class="glass card">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
             <h3>Frontend Developer & UI/UX Designer Intern @ Connect N Build</h3>
@@ -543,11 +616,11 @@
     <section id="story" class="bg-section bg-story">
       <div class="container gs-reveal">
         <div class="glass" style="padding: 60px; max-width: 900px; margin: 0 auto; border-left: 2px solid rgba(255,255,255,0.2);">
-          <h2 class="sec-title" style="margin-bottom: 20px;"><span>// ORIGIN</span> My Story</h2>
+          <h2 class="sec-title" style="margin-bottom: 20px;">My Story</h2>
           <h4 style="font-size: 24px; font-family: 'Space Mono', monospace; color: #fff; margin-bottom: 30px;">I'm A Ramadass. I'm not like most people who just use apps and move on.</h4>
           
           <p style="font-size: 18px; color: #d4d4d4; line-height: 1.8; margin-bottom: 20px;">
-            Whenever I see an app, website, or tool, one question always hits my mind: <strong style="color: #fff;">"Why not build one myself — and make it open source?"</strong>
+            Whenever I see an app, website, or tool, one question always hits my mind: <strong style="color: #fff;">"How can i make it better?"</strong>
           </p>
           <p style="font-size: 18px; color: #d4d4d4; line-height: 1.8; margin-bottom: 20px;">
             That mindset is what drives me. I don't just consume technology. I break it down, understand it, and rebuild it my own way. I focus heavily on frontend experiences, premium UI design, AI, and practical software products.
@@ -562,34 +635,36 @@
     <!-- TECH ARSENAL (MARQUEE) -->
     <section id="skills" style="padding: 0; background: #000;">
       <div class="container" style="padding-top: 80px; padding-bottom: 20px;">
-        <h2 class="sec-title" style="margin-bottom: 0;"><span>// ARSENAL</span> Tech Stack</h2>
+        <h2 class="sec-title" style="margin-bottom: 0;">Tech Stack</h2>
       </div>
       <div class="marquee-container">
         <div class="marquee-content">
-          <!-- Marquee Elements based on new skills -->
+          <span class="marquee-item">C</span>
+          <span class="marquee-item">C++</span>
           <span class="marquee-item">Python</span>
           <span class="marquee-item">React</span>
           <span class="marquee-item">Next.js 15</span>
           <span class="marquee-item">Three.js</span>
-          <span class="marquee-item">GSAP</span>
           <span class="marquee-item">Flask</span>
           <span class="marquee-item">Node.js</span>
           <span class="marquee-item">Supabase</span>
-          <span class="marquee-item">Anthropic API</span>
+          <span class="marquee-item">Linux</span>
+          <span class="marquee-item">AI Automations</span>
+          <span class="marquee-item">ML Algorithms</span>
+          <span class="marquee-item">DSA</span>
+          <span class="marquee-item">C</span>
           <span class="marquee-item">C++</span>
-          <span class="marquee-item">Ubuntu</span>
-          
           <span class="marquee-item">Python</span>
           <span class="marquee-item">React</span>
           <span class="marquee-item">Next.js 15</span>
           <span class="marquee-item">Three.js</span>
-          <span class="marquee-item">GSAP</span>
           <span class="marquee-item">Flask</span>
           <span class="marquee-item">Node.js</span>
           <span class="marquee-item">Supabase</span>
-          <span class="marquee-item">Anthropic API</span>
-          <span class="marquee-item">C++</span>
-          <span class="marquee-item">Ubuntu</span>
+          <span class="marquee-item">Linux</span>
+          <span class="marquee-item">AI Automations</span>
+          <span class="marquee-item">ML Algorithms</span>
+          <span class="marquee-item">DSA</span>
         </div>
       </div>
     </section>
@@ -614,62 +689,99 @@
       </div>
     </section>
 
-    <!-- PROJECTS -->
+                            <!-- PROJECTS -->
     <section id="projects" class="bg-section bg-code">
       <div class="container gs-reveal">
-        <h2 class="sec-title"><span>// ARCHIVE</span> Selected Projects</h2>
+        <h2 class="sec-title">Selected Projects</h2>
         <div class="grid-2">
           
-          <!-- Notice the new data-url attributes and the open-modal-btn class -->
-          <div class="glass card">
-            <h3>Sasta Trust</h3>
-            <p>Production donation platform for a charitable organization. Live donor leaderboards, receipt management, and Google OAuth login.</p>
-            <div>
-              <span class="tag">Supabase</span> <span class="tag">Vercel</span> <span class="tag">OAuth</span>
-            </div>
-            <a href="#" data-url="https://sasta-trust-app.vercel.app/" data-title="Sasta Trust" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
-          </div>
-
-          <div class="glass card">
-            <h3>Amrut Satvik Foods</h3>
-            <p>Live e-commerce platform for Satvik and organic foods. Deep focus on product display, shopping UX, and conversion-oriented product flow.</p>
-            <div>
-              <span class="tag">E-Commerce</span> <span class="tag">Frontend</span>
-            </div>
-            <a href="#" data-url="https://amrutsatvikfoodsv2.vercel.app/" data-title="Amrut Satvik Foods" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
-          </div>
-
-          <div class="glass card">
-            <h3>Bhaskararajapuram Temple</h3>
-            <p>Immersive heritage storytelling website. Cinematic, scroll-driven website built with Next.js 15, GSAP ScrollTrigger, and Framer Motion.</p>
-            <div>
-              <span class="tag">Next.js 15</span> <span class="tag">GSAP</span>
-            </div>
-            <a href="#" data-url="https://temple-111.vercel.app/" data-title="Bhaskararajapuram Temple" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
-          </div>
-
-          <div class="glass card">
-            <h3>BloxdioCoderAI</h3>
-            <p>Dual-AI RAG pipeline coding assistant for the Bloxd.io game platform. Reduces 60k token burn by utilizing a refined two-key AI pipeline.</p>
-            <div>
-              <span class="tag">AI / RAG</span> <span class="tag">JS</span>
-            </div>
-            <a href="#" data-url="https://codebyramu.github.io/BloxdioCoderAI/" data-title="BloxdioCoderAI" class="font-mono open-modal-btn" style="color: #fff; margin-top: 20px; display: inline-block; text-decoration: none; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.3);">[View Project]</a>
-          </div>
-
-          <div class="glass card">
-            <h3>Project V (Ekalavya)</h3>
-            <p>Student skill-tracking and placement portfolio platform for engineering students. <strong>Awarded 3rd Prize at Velsathon 2026.</strong></p>
-            <div>
-              <span class="tag">Platform</span> <span class="tag">Award Winning</span>
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1537432376769-00f5c2f4c8d2?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1607968393522-83b631d8e13f?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">Sasta Trust</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">Production donation platform for a religious charitable organization. Features live donor leaderboards, occasion listings, receipt management, UPI + bank transfer info, and Google OAuth login.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="https://sasta-trust-app.vercel.app/" data-title="Sasta Trust">Preview</button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="glass card">
-            <h3>Project A</h3>
-            <p>A peer-led educational mentorship network operating as an expansion of Project V. Managing an 8-member core team to train students.</p>
-            <div>
-              <span class="tag">Mentorship</span> <span class="tag">Leadership</span>
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1608222351212-18fe0ec7b13b?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">Amrut Satvik Foods</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">Live e-commerce platform for Satvik and organic foods. Deep focus on product display, shopping UX, customer flow, and conversion-oriented product flow.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="https://amrutsatvikfoodsv2.vercel.app/" data-title="Amrut Satvik Foods">Preview</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1604562414704-582bbbcce00e?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1598448554271-9fbd59a1ceeb?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">Bhaskararajapuram Temple</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">Immersive village & heritage storytelling website. Cinematic, scroll-driven website built with Next.js 15, GSAP ScrollTrigger, and Framer Motion.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="https://temple-111.vercel.app/" data-title="Bhaskararajapuram Temple">Preview</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">BloxdioCoderAI</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">Dual-AI RAG pipeline coding assistant for the Bloxd.io browser game platform. Reduces 60k token burn by utilizing a refined two-key AI pipeline.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="https://codebyramu.github.io/BloxdioCoderAI/" data-title="BloxdioCoderAI">Preview</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1531297172867-4f5411422119?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">Project V (Ekalavya)</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">Student skill-tracking and placement portfolio platform for engineering students. Creates a developmental timeline showing growth and live GitHub activity.<br><br>🏆 Awarded 3rd Prize + ₹2,000 at Velsathon 2026.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="#" data-title="Project V" style="display:none;">Preview</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass card project-card">
+            <canvas class="liquid-canvas" data-img1="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=60" data-img2="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=60"></canvas>
+            <div class="card-content">
+              <div>
+                <h3 class="card-title">Project A</h3>
+              </div>
+              <div class="card-bottom">
+                <p class="card-desc">A peer-led educational learning and mentorship network operating as an expansion of Project V. Managing an 8-member core team to train engineering students.</p>
+                <div style="margin-top: 15px;">
+                  <button class="btn open-modal-btn" data-url="#" data-title="Project A" style="display:none;">Preview</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -677,227 +789,375 @@
       </div>
     </section>
 
-    <!-- ACHIEVEMENTS -->
-    <section style="background: #050505;">
+    <!-- ACHIEVEMENTS & HOBBIES -->
+    <section id="achievements" class="bg-section">
       <div class="container gs-reveal">
-        <h2 class="sec-title"><span>// MILESTONES</span> Hackathons & Achievements</h2>
-        <div class="glass card">
-          <ul style="list-style: none; padding-left: 0; color: #a3a3a3; font-size: 16px; line-height: 1.8;">
-            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> Velsathon 2026:</span> Secured 3rd place campus-wide for autonomous project creation (Project V).</li>
-            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> BAH 2026:</span> Explored satellite imagery gap-filling using ML and Solar Flare Forecasting as part of Team Gorillas.</li>
-            <li style="margin-bottom: 15px;"><span style="color: #fff; font-family: 'Space Mono', monospace;">> Certifications:</span> Google Cloud Skills Boost, CS50P (Harvard Python), CodinGame Escape, C++ Pattern Printing.</li>
-            <li><span style="color: #fff; font-family: 'Space Mono', monospace;">> AI Verification:</span> Completed professional student verification for advanced AI Pro subscriptions.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOBBIES -->
-    <section style="background: #080808;">
-      <div class="container gs-reveal">
-        <h2 class="sec-title"><span>// OFFLINE</span> Beyond Code</h2>
-        <div class="grid-3">
-          <div class="glass card">
-            <h3>Strategic Chess</h3>
-            <p>Active player mapping out tactical opening variations, sharp defensive structures, and mid-game strategies via standard algebraic coordinate notation. (Beginner level, recently started).</p>
-          </div>
-          <div class="glass card">
-            <h3>Linux Power User</h3>
-            <p>Ubuntu is my daily driver. I manage packages, troubleshoot, and write scripts to automate system behavior.</p>
-          </div>
-          <div class="glass card">
-            <h3>Design Philosophy</h3>
-            <p>I advocate for dark minimal layouts, cinematic aesthetics, and premium UI without visual noise. I try to make the website look more simple and minimal.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- GITHUB STATS & CONTACT -->
-    <section id="contact" style="background: #020202; border-top: 1px solid var(--glass-border);">
-      <div class="container gs-reveal">
-        <div class="grid-2" style="gap: 60px;">
+        <div class="grid-2">
           
+          <!-- HACKATHONS -->
           <div>
-            <h2 class="sec-title"><span>// OPEN SOURCE</span> GitHub Activity</h2>
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-              <img class="glass" src="https://github-readme-stats.vercel.app/api?username=codebyramu&show_icons=true&hide_border=true&bg_color=0a0a0a&title_color=ffffff&icon_color=ffffff&text_color=d6d3d1&hide=stars" alt="GitHub Stats" style="width: 100%; border-radius: 12px; padding: 0;">
-              <img class="glass" src="https://streak-stats.demolab.com?user=codebyramu&hide_border=true&background=0a0a0a&ring=ffffff&fire=ffffff&currStreakLabel=ffffff&sideLabels=d6d3d1&dates=d6d3d1&currStreakNum=fafaf9&sideNums=fafaf9" alt="GitHub Streak" style="width: 100%; border-radius: 12px; padding: 0;">
-            </div>
+            <h2 class="sec-title" style="font-size: 28px;">Hackathons & Milestones</h2>
+            <ul style="list-style: none; padding: 0;">
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent); margin-bottom: 8px;">Velsathon 2026</h3>
+                <p style="color: #ccc; font-size: 15px;">Secured 3rd place campus-wide for autonomous project creation (Project V).</p>
+              </li>
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent); margin-bottom: 8px;">BAH 2026 (Bharatiya Antariksh Hackathon)</h3>
+                <p style="color: #ccc; font-size: 15px;">Explored satellite imagery gap-filling using ML and Solar Flare Forecasting as part of Team Gorillas.</p>
+              </li>
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: var(--accent); margin-bottom: 8px;">Certifications & Verification</h3>
+                <p style="color: #ccc; font-size: 15px;">Google Cloud Skills Boost (Labs GSP073, GSP064), CS50P (Harvard Python problem sets), CodinGame Escape, C++ Pattern Printing.<br>Completed professional student verification for advanced AI Pro subscriptions.</p>
+              </li>
+            </ul>
           </div>
 
+          <!-- HOBBIES -->
           <div>
-            <h2 class="sec-title"><span>// TERMINAL</span> Initiate Contact</h2>
-            <p style="margin-bottom: 30px; font-size: 18px;">Open to collabs, interesting builds, or anyone who wants to talk AI, games, or code.</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-              <a href="https://github.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
-                <span class="font-mono">GitHub</span>
-                <span style="color: var(--accent);">-></span>
-              </a>
-              <a href="https://x.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
-                <span class="font-mono">X / Twitter</span>
-                <span style="color: var(--accent);">-></span>
-              </a>
-              <a href="https://www.youtube.com/@KingRamu_Gamer" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
-                <span class="font-mono">YouTube</span>
-                <span style="color: var(--accent);">-></span>
-              </a>
-              <a href="https://leetcode.com/codebyramu" target="_blank" class="glass card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #fff;">
-                <span class="font-mono">LeetCode</span>
-                <span style="color: var(--accent);">-></span>
-              </a>
-            </div>
+            <h2 class="sec-title" style="font-size: 28px;">Hobbies & Beyond Code</h2>
+            <ul style="list-style: none; padding: 0;">
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">♟️ Strategic Chess</h3>
+                <p style="color: #ccc; font-size: 15px;">Active beginner mapping out tactical opening variations, sharp defensive structures, and mid-game strategies via standard algebraic coordinate notation.</p>
+              </li>
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">🐧 Linux Power User</h3>
+                <p style="color: #ccc; font-size: 15px;">Ubuntu is my daily driver. I manage packages, troubleshoot, and write scripts to automate system behavior.</p>
+              </li>
+              <li class="glass card" style="margin-bottom: 20px;">
+                <h3 style="color: #fff; margin-bottom: 8px;">🎨 Design Philosophy</h3>
+                <p style="color: #ccc; font-size: 15px;">I advocate for dark minimal layouts, cinematic aesthetics, and premium UI without visual noise (i try to make the website look more simple and minimal).</p>
+              </li>
+            </ul>
           </div>
-
         </div>
       </div>
     </section>
 
-    <footer style="text-align: center; padding: 40px; border-top: 1px solid var(--glass-border); background: #000;">
-      <p class="font-mono" style="color: #666; font-size: 12px;">ramu · codebyramu · 2025 // SYS.END</p>
-    </footer>
-  </div> <!-- End main-content -->
+    
 
-  <!-- PROJECT MODAL -->
-  <div id="project-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title font-mono" id="modal-title">Project Preview</div>
-        <div class="close-modal font-mono" id="close-modal">&times;</div>
+    <!-- FOOTER -->
+    <footer style="padding: 40px 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 60px;">
+      <div class="container">
+        <h2 class="font-mono" style="font-size: 24px; color: #fff; margin-bottom: 20px;">RAMU<span style="color:var(--accent)">_</span></h2>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+          <a href="https://github.com/codebyramu" target="_blank" style="color: #a3a3a3; text-decoration: none; transition: color 0.3s;">GitHub</a>
+          <a href="https://x.com/codebyramu" target="_blank" style="color: #a3a3a3; text-decoration: none; transition: color 0.3s;">Twitter</a>
+          <a href="https://youtube.com/@KingRamu_Gamer" target="_blank" style="color: #a3a3a3; text-decoration: none; transition: color 0.3s;">YouTube</a>
+          <a href="https://leetcode.com/codebyramu" target="_blank" style="color: #a3a3a3; text-decoration: none; transition: color 0.3s;">LeetCode</a>
+        </div>
+        <p style="color: #666; font-size: 14px;">© 2026 Anantha Krishnan Ramadass. Built with raw logic.</p>
       </div>
-      <div class="modal-body">
-        <iframe id="modal-iframe" src="" title="Project Preview"></iframe>
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: -1; color: #666; font-family: 'Space Mono', monospace;">Loading Preview...</div>
+    </footer>
+  </div> <!-- End Main Content -->
+
+  <!-- PREVIEW MODAL -->
+  <div id="preview-modal" class="modal">
+    <div class="modal-content glass" style="max-width: 1000px; padding: 20px;">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 id="modal-title" style="font-family: 'Space Mono', monospace; font-size: 24px; color: #fff;">Project Preview</h3>
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <a id="modal-visit-btn" href="#" target="_blank" class="btn" style="background: var(--accent); color: #000; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; display: none;">Visit Website</a>
+          <span class="close-modal" style="font-size: 32px; cursor: pointer; color: #fff; line-height: 1;">&times;</span>
+        </div>
       </div>
-      <div class="modal-footer">
-        <a href="#" id="modal-visit-btn" target="_blank" class="btn" style="padding: 10px 20px; font-size: 12px;">Launch Website</a>
+      <div class="iframe-container" style="width: 100%; height: 75vh; border-radius: 8px; overflow: hidden; background: #000;">
+        <iframe id="preview-frame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
       </div>
     </div>
   </div>
 
   <script>
-    // 1. Splash Screen Background Rotator
-    const splashBgs = document.querySelectorAll('.splash-bg');
-    let currentBg = 0;
-    setInterval(() => {
-      splashBgs[currentBg].classList.remove('active');
-      currentBg = (currentBg + 1) % splashBgs.length;
-      splashBgs[currentBg].classList.add('active');
-    }, 4000); // changes every 4 seconds
+    // 1. Lenis Smooth Scroll
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+    });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
 
-    // 2. Initial Splash Animation Setup
-    gsap.to(".splash-text", { opacity: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 0.2 });
-    gsap.to(".splash-sub", { opacity: 1, y: 0, duration: 1.5, ease: "power4.out", delay: 0.6 });
-    gsap.to(".splash-hint", { opacity: 1, duration: 1, delay: 1.5 });
-
-    // 3. Click to enter & Fullscreen
+    gsap.registerPlugin(ScrollTrigger);
+    // 2. Splash Screen Logic
     const splash = document.getElementById('splash');
     const mainContent = document.getElementById('main-content');
     
     splash.addEventListener('click', () => {
-      const docEl = document.documentElement;
-      if (docEl.requestFullscreen) {
-        docEl.requestFullscreen().catch(err => console.log(err));
-      } else if (docEl.webkitRequestFullscreen) {
-        docEl.webkitRequestFullscreen();
-      }
-
-      gsap.to(splash, {
-        y: "-100%",
-        opacity: 0,
-        duration: 1.2,
-        ease: "power4.inOut",
-        onComplete: () => {
-          splash.style.display = 'none';
-          document.body.classList.remove('locked');
-          mainContent.style.visibility = 'visible';
-          gsap.to(mainContent, { opacity: 1, duration: 1 });
-          initScroll();
-        }
-      });
+      gsap.to(splash, { opacity: 0, duration: 0.8, onComplete: () => {
+        splash.style.display = 'none';
+        document.body.classList.remove('locked');
+        gsap.to(mainContent, { opacity: 1, autoAlpha: 1, duration: 1 });
+        
+        // Trigger reveal animations
+        gsap.utils.toArray('.gs-reveal').forEach(elem => {
+          gsap.fromTo(elem, 
+            { opacity: 0, y: 50 }, 
+            { opacity: 1, y: 0, duration: 1, ease: "power3.out", scrollTrigger: { trigger: elem, start: "top 85%" } }
+          );
+        });
+      }});
     });
+    
+    gsap.to('.splash-text', { opacity: 1, y: 0, duration: 1, delay: 0.2 });
+    gsap.to('.splash-sub', { opacity: 1, y: 0, duration: 1, delay: 0.6 });
+    gsap.to('.splash-hint', { opacity: 1, duration: 1, delay: 1.5 });
 
-    // 4. Modal Logic
-    const modal = document.getElementById('project-modal');
-    const iframe = document.getElementById('modal-iframe');
+    // 3. Modal Logic
+    const modal = document.getElementById('preview-modal');
+    const iframe = document.getElementById('preview-frame');
     const modalTitle = document.getElementById('modal-title');
-    const modalVisitBtn = document.getElementById('modal-visit-btn');
-    const closeModal = document.getElementById('close-modal');
-
+    const visitBtn = document.getElementById('modal-visit-btn');
+    
     document.querySelectorAll('.open-modal-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         const url = btn.getAttribute('data-url');
-        const title = btn.getAttribute('data-title');
-        
-        iframe.src = url;
-        modalTitle.innerText = title;
-        modalVisitBtn.href = url;
-        
-        gsap.to(modal, { autoAlpha: 1, duration: 0.4, ease: "power3.out" });
-        document.body.style.overflow = 'hidden'; // lock scroll behind modal
+        if(url && url !== "#") {
+          iframe.src = url;
+          modalTitle.textContent = btn.getAttribute('data-title') || 'Preview';
+          visitBtn.href = url;
+          visitBtn.style.display = 'inline-block';
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+          // Ensure modal opacity and visibility
+          gsap.to(modal, { opacity: 1, autoAlpha: 1, duration: 0.3 });
+        }
+      });
+    });
+    
+    document.querySelector('.close-modal').addEventListener('click', () => {
+      gsap.to(modal, { opacity: 0, autoAlpha: 0, duration: 0.3, onComplete: () => {
+        iframe.src = '';
+        document.body.style.overflow = 'auto';
+      }});
+    });
+
+    // 4. Custom Cursor
+    const cursor = document.createElement('div');
+    cursor.style.width = '20px';
+    cursor.style.height = '20px';
+    cursor.style.border = '2px solid var(--accent)';
+    cursor.style.borderRadius = '50%';
+    cursor.style.position = 'fixed';
+    cursor.style.pointerEvents = 'none';
+    cursor.style.zIndex = '99999';
+    cursor.style.transform = 'translate(-50%, -50%)';
+    cursor.style.transition = 'width 0.2s, height 0.2s, background 0.2s';
+    document.body.appendChild(cursor);
+
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    document.querySelectorAll('a, button, .marquee-item, .open-modal-btn, .project-card').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '40px';
+        cursor.style.height = '40px';
+        cursor.style.background = 'rgba(255,255,255,0.1)';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        cursor.style.background = 'transparent';
       });
     });
 
-    function hideModal() {
-      gsap.to(modal, { 
-        autoAlpha: 0, 
-        duration: 0.3, 
-        onComplete: () => {
-          iframe.src = ""; // stop iframe loading/playing
-          document.body.style.overflow = ''; // unlock scroll
-        } 
-      });
-    }
+  </script>
 
-    closeModal.addEventListener('click', hideModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) hideModal();
-    });
+  <script>
+  // 5. WEBGL LIQUID RIPPLE & CROSSFADE
+  document.querySelectorAll('.liquid-canvas').forEach(canvas => {
+    const gl = canvas.getContext('webgl');
+    if(!gl) return;
+    
+    const VS = `
+    attribute vec2 p;
+    varying vec2 vUv;
+    void main(){
+      vUv = p * 0.5 + 0.5;
+      gl_Position = vec4(p, 0, 1);
+    }`;
+    
+    const FS = `
+    precision highp float;
+    varying vec2 vUv;
+    uniform sampler2D tex1;
+    uniform sampler2D tex2;
+    uniform float mixRatio;
+    uniform vec2 res;
+    uniform vec2 trail[20];
+    uniform float age[20];
 
-    // 5. Smooth Scroll and ScrollTrigger (Lenis + GSAP)
-    function initScroll() {
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        direction: 'vertical',
-        gestureDirection: 'vertical',
-        smooth: true,
-      });
-
-      function raf(time) {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      }
-      requestAnimationFrame(raf);
-
-      lenis.on('scroll', ScrollTrigger.update);
-      gsap.ticker.add((time)=>{
-        lenis.raf(time * 1000);
-      });
-      gsap.ticker.lagSmoothing(0, 0);
-
-      const reveals = document.querySelectorAll('.gs-reveal');
+    void main(){
       
-      reveals.forEach((elem) => {
-        gsap.fromTo(elem, 
-          { autoAlpha: 0, y: 50 }, 
-          {
-            duration: 1, 
-            autoAlpha: 1, 
-            y: 0, 
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: elem,
-              start: "top 85%", 
-              end: "bottom 20%",
-              toggleActions: "play none none reverse"
-            }
-          }
-        );
-      });
+      vec2 uv = vUv;
+      
+      // Calculate Object-Fit Cover for WebGL
+      vec2 imgRes = vec2(800.0, 600.0); // Assume standard landscape image
+      vec2 s = res / imgRes;
+      float scale = max(s.x, s.y);
+      vec2 newRes = imgRes * scale;
+      vec2 offset = vec2(0.0);
+      if (newRes.x > 0.0 && newRes.y > 0.0) {
+          offset = (newRes - res) / 2.0 / newRes;
+      }
+      vec2 uvCover = uv * (res / newRes) + offset;
+
+      vec2 asp = vec2(res.x / res.y, 1.0);
+      vec2 warp = vec2(0.0);
+      
+      // User's exact liquid ripple math
+      for(int i = 0; i < 20; i++){
+        if(age[i] < 0.001) continue;
+        
+        vec2 tp = vec2(trail[i].x / res.x, trail[i].y / res.y);
+        vec2 d = (uv - tp) * asp;
+        float dist = length(d);
+        
+        float radius = 0.25; 
+        if (dist < radius) {
+          float falloff = smoothstep(radius, 0.0, dist);
+          float wave = cos(dist * 40.0 - age[i] * 5.0); 
+          warp -= normalize(d + 0.0001) * wave * falloff * age[i] * 0.04;
+        }
+      }
+
+      vec4 c1 = texture2D(tex1, uvCover + warp);
+      vec4 c2 = texture2D(tex2, uvCover + warp);
+
+      vec4 color = mix(c1, c2, mixRatio);
+
+      gl_FragColor = vec4(clamp(color.rgb, 0.0, 1.0), 1.0);
+    }`;
+
+    function mkShader(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
     }
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
+    gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+    const aP = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(aP);
+    gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+
+    const uRes = gl.getUniformLocation(prog, 'res');
+    const uTex1 = gl.getUniformLocation(prog, 'tex1');
+    const uTex2 = gl.getUniformLocation(prog, 'tex2');
+    const uMixRatio = gl.getUniformLocation(prog, 'mixRatio');
+    const uTrail = gl.getUniformLocation(prog, 'trail');
+    const uAge = gl.getUniformLocation(prog, 'age');
+
+    const t1 = gl.createTexture();
+    const t2 = gl.createTexture();
+    let loadedCount = 0;
+
+    function loadTexture(url, texObj) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        gl.bindTexture(gl.TEXTURE_2D, texObj);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        loadedCount++;
+      };
+      img.src = url;
+    }
+    
+    loadTexture(canvas.getAttribute('data-img1'), t1);
+    loadTexture(canvas.getAttribute('data-img2'), t2);
+
+    const N = 20;
+    const trail = Array.from({length: N}, () => ({x:0, y:0, a:0}));
+    let lx = -1, ly = -1;
+
+    function pushTrail(x, y) {
+      const rect = canvas.getBoundingClientRect();
+      const sy = rect.height - y; // Flip Y for shader
+      for (let i = N-1; i > 0; i--) {
+        trail[i].x = trail[i-1].x;
+        trail[i].y = trail[i-1].y;
+        trail[i].a = trail[i-1].a * 0.95; 
+      }
+      trail[0].x = x;
+      trail[0].y = sy;
+      trail[0].a = 1.0;
+    }
+
+    const parent = canvas.parentElement;
+    parent.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const dx = cx - lx, dy = cy - ly;
+      if(lx < 0 || dx*dx+dy*dy > 4) { 
+        pushTrail(cx, cy); 
+        lx = cx; ly = cy; 
+      }
+    });
+    parent.addEventListener('mouseleave', () => { lx = -1; ly = -1; });
+
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resize);
+    setTimeout(resize, 100);
+
+    function loop(time) {
+      for(let i = 0; i < N; i++) trail[i].a *= 0.99; 
+
+      const mixVal = (Math.sin(time / 1273.2) + 1.0) / 2.0; 
+
+      gl.uniform2f(uRes, canvas.width, canvas.height);
+      gl.uniform1f(uMixRatio, mixVal);
+
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, t1);
+      gl.uniform1i(uTex1, 0);
+
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, t2);
+      gl.uniform1i(uTex2, 1);
+
+      const pts = new Float32Array(N*2);
+      const ages = new Float32Array(N);
+      for(let i=0; i<N; i++){
+        pts[i*2] = trail[i].x; 
+        pts[i*2+1] = trail[i].y;
+        ages[i] = trail[i].a;
+      }
+      gl.uniform2fv(uTrail, pts);
+      gl.uniform1fv(uAge, ages);
+
+      if(loadedCount >= 2) {
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      }
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+  });
   </script>
 </body>
 </html>
