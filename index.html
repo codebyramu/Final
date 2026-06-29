@@ -155,12 +155,11 @@
       border: 1px solid var(--glass-border);
       border-radius: 16px;
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out;
     }
     .glass:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-5px);
-      box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.25);
     }
 
     /* --- VINTAGE GLITCH EFFECTS --- */
@@ -1151,6 +1150,40 @@
     }
     requestAnimationFrame(loop);
   });
+
+    // 6. 3D Card Tilt Effect (Glassmorphism Reaction)
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Normalize coordinates to -1 .. 1
+        const xNorm = (x / rect.width - 0.5) * 2;
+        const yNorm = (y / rect.height - 0.5) * 2;
+        
+        // Max rotation angle (degrees)
+        const maxDeg = 8;
+        
+        // Calculate rotation
+        const rotX = -yNorm * maxDeg;
+        const rotY = xNorm * maxDeg;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.02, 1.02, 1.02)`;
+        card.style.boxShadow = `${-xNorm * 20}px ${-yNorm * 20}px 40px rgba(0, 0, 0, 0.5)`;
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+        card.style.boxShadow = `0 8px 32px 0 rgba(0, 0, 0, 0.3)`;
+        setTimeout(() => { card.style.transition = 'transform 0.1s ease-out, box-shadow 0.1s ease-out'; }, 100);
+        card.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease-out'; // Spring back smoothly
+      });
+      
+      card.addEventListener('mouseenter', () => {
+         card.style.transition = 'transform 0.1s ease-out, box-shadow 0.1s ease-out'; // Fast track when hovering
+      });
+    });
   </script>
 </body>
 </html>
